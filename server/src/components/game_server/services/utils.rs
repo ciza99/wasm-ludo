@@ -1,11 +1,11 @@
 use crate::components::game::database;
 use crate::components::game_server::actor::GameServerState;
-use crate::components::game_server::utils::send_message_to_room;
+use crate::components::game_server::utils::{send_message_to_room, send_message};
 use crate::models::actor_messages::ClientActorMessage;
 use crate::models::game::Game;
 use crate::utils::enums::ServerMessage;
 
-// update game, sends SkipPlayer message and GameUpdate message to room,
+/// updates game, sends SkipPlayer message and GameUpdate message to room,
 pub async fn skip_player(
   state: GameServerState,
   msg: &ClientActorMessage,
@@ -46,16 +46,24 @@ pub async fn send_game_update_message(
   msg: &ClientActorMessage,
   game: &Game,
 ) -> Game {
-  let game = database::update_game_state(&state.db, &msg.room_id, game)
-    .await
-    .unwrap(); //TODO handle errors
-  let update_message = serde_json::to_string(&ServerMessage::GameUpdate(game.clone())).unwrap();
+  return match database::update_game_state(&state.db, &msg.room_id, game)
+      .await {
+    Ok(game) => {
+      let update_message = serde_json::to_string(&ServerMessage::GameUpdate(game.clone())).unwrap();
 
-  send_message_to_room(
-    update_message.as_str(),
-    state.sessions.clone(),
-    state.rooms.clone(),
-    &msg.room_id,
-  );
-  game
+      send_message_to_room(
+        update_message.as_str(),
+        state.sessions.clone(),
+        state.rooms.clone(),
+        &msg.room_id,
+      );
+      game
+    }
+    Err(_) => {
+      let message =
+          serde_json::to_string(&ServerMessage::Error("Cannot update the game".into())).unwrap();
+      send_message(message.as_str(), state.sessions, &msg.player_id);
+      game.clone()
+    }
+  }
 }

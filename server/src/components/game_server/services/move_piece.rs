@@ -34,7 +34,7 @@ pub async fn move_piece(state: GameServerState, msg: ClientActorMessage, positio
     send_message(message.as_str(), state.sessions, &msg.player_id);
     return;
   }
-  let current_player_id = game.get_current_player_id(); //TODO probably shouldn't unwrap
+  let current_player_id = game.get_current_player_id();
   if current_player_id != msg.player_id {
     let message =
       serde_json::to_string(&ServerMessage::Error("It is not your turn".into())).unwrap();

@@ -8,17 +8,6 @@ use crate::utils::dice::get_dice_value;
 use crate::utils::enums::MoveResult;
 use tokio::time::{sleep, Duration};
 
-// TODO:
-//  1) do we need to do anything else when winner is found except for calling finish_game() ?
-//  2) should skip player if move is invalid? could player get stuck if he has no valid moves
-//     and it wasn't detected prior (i.e. he wasn't skipped) ?
-//  -  for now we will skip to the next player if a bot can't make a move, otherwise he would loop
-//     trying to execute the same invalid move - no message is being sent to players,
-//     only printed to console (since it shouldn't happen anyway)
-//  - we could send a message to player:
-// let message = serde_json::to_string(&ServerMessage::Error("something".into())).unwrap();
-//       send_message(message.as_str(), state.sessions, &msg.player_id);
-//
 fn move_result_update_game(game: &mut Game, move_result: MoveResult) {
   match move_result {
     MoveResult::Success(_) => {
@@ -49,7 +38,7 @@ fn move_result_update_game(game: &mut Game, move_result: MoveResult) {
 pub async fn move_bot(state: GameServerState, msg: &ClientActorMessage, game: &mut Game) {
   let mut game = game.clone();
   while game.is_current_player_ai() {
-    sleep(Duration::from_millis(3000)).await; // TODO: add sleep to other bot messages?
+    sleep(Duration::from_millis(3000)).await;
 
     let throw_sum = throw_dice_bot_messages(state.clone(), msg).await;
     // skip bot's move
@@ -201,7 +190,7 @@ pub async fn move_bot(state: GameServerState, msg: &ClientActorMessage, game: &m
   }
 }
 
-// updates game based on move_result (set winner / change current player and empty dice_throws)
+/// updates game based on move_result (set winner / change current player and empty dice_throws)
 pub async fn update_game_bot(
   state: GameServerState,
   msg: &ClientActorMessage,
@@ -212,8 +201,8 @@ pub async fn update_game_bot(
   send_game_update_message(state.clone(), msg, game).await
 }
 
-// inform player about value on dice after each roll
-// we don't need to keep updating game, since we perform rolling and move in the function / 'time frame'
+/// inform player about value on dice after each roll
+/// we don't need to keep updating game, since we perform rolling and move in the function / 'time frame'
 pub async fn throw_dice_bot_messages(state: GameServerState, msg: &ClientActorMessage) -> usize {
   let mut throw_sum: usize = 0;
 

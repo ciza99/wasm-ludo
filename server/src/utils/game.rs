@@ -16,7 +16,6 @@ pub fn fill_with_bots(players: Vec<Player>) -> Vec<Player> {
       .find(|player| player.color == *color)
     {
       acc.push(player);
-      acc
     } else {
       acc.push(Player::new(
         "0".to_string(),
@@ -24,12 +23,12 @@ pub fn fill_with_bots(players: Vec<Player>) -> Vec<Player> {
         *color,
         true,
       ));
-      acc
     }
+    acc
   })
 }
 
-// called upon receiving either PromotePiece or MovePiece(position, Option<Color>)
+/// called upon receiving either PromotePiece or MovePiece(position, Option<Color>)
 pub async fn play_round(game: &mut Game, move_type: MoveType) -> MoveResult {
   let mut move_result = make_a_move(game, move_type);
 
@@ -44,45 +43,4 @@ pub async fn play_round(game: &mut Game, move_type: MoveType) -> MoveResult {
   }
 
   move_result
-  // match move_result {
-  //   MoveResult::Winner(winner) => {
-  //     // TODO: handle errors
-  //     let make_doc = || -> anyhow::Result<Document> {
-  //       let fields = bson::to_bson(&game.fields)?;
-  //       let players = bson::to_bson(&game.players)?;
-  //       let current_player = bson::to_bson(&game.current_player)?;
-  //       let finished_at = bson::to_bson(&mongodb::bson::DateTime::now())?;
-  //       let doc = doc! { "$set": { "fields": fields, "players": players, "current_player": current_player, "finished_at": finished_at } };
-  //       Ok(doc)
-  //     };
-  //     let doc = match make_doc() {
-  //       Ok(doc) => doc,
-  //       Err(_) => return MoveResult::Error("failed to create document".into()),
-  //     };
-  //     if let Err(err) = update(db, game_id.as_str(), doc).await {
-  //       return MoveResult::Error(err.to_string());
-  //    };
-  //     MoveResult::Winner(winner)
-  //   }
-  //   MoveResult::Success(msg) => {
-  //     let make_doc = || -> anyhow::Result<Document> {
-  //       let fields = bson::to_bson(&game.fields)?;
-  //       let players = bson::to_bson(&game.players)?;
-  //       let current_player = bson::to_bson(&game.current_player)?;
-  //       let dice_throws: Vec<usize> = Vec::new();
-  //       let bson_dice_throws = bson::to_bson(&dice_throws)?;
-  //       let doc = doc! { "$set": { "fields": fields, "players": players, "current_player": current_player, "dice_throws": &bson_dice_throws } };
-  //       Ok(doc)
-  //     };
-  //     let doc = match make_doc() {
-  //       Ok(doc) => doc,
-  //       Err(_) => return MoveResult::Error("failed to create document".into()),
-  //     };
-  //     if let Err(err) = update(db, game_id.as_str(), doc).await {
-  //       return MoveResult::Error(err.to_string());
-  //     };
-  //     MoveResult::Success(msg)
-  //   }
-  //   MoveResult::Error(msg) => MoveResult::Error(msg),
-  // }
 }

@@ -9,7 +9,6 @@ use crate::{
 };
 
 pub async fn start_game(state: GameServerState, msg: ClientActorMessage) {
-  // TODO: optimize
   let start_res = database::start_game(&state.db, &msg.room_id).await;
   let mut game = match start_res {
     Ok(game) => game,

@@ -29,10 +29,10 @@ pub struct GameServerState {
   pub rooms: HashMap<String, HashSet<String>>,
 }
 
-// GameServer actor which keeps track of all the sessions and game rooms (each game room has up to 4 sessions)
+/// GameServer actor which keeps track of all the sessions and game rooms (each game room has up to 4 sessions)
 pub struct GameServer {
   db: Arc<Mutex<Database>>,
-  sessions: HashMap<String, Session>, // player_id => Addres to send messages
+  sessions: HashMap<String, Session>, // player_id => Address to send messages
   rooms: HashMap<String, HashSet<String>>, // room_id / game_id => player_id
 }
 
@@ -54,7 +54,7 @@ impl GameServer {
   }
 }
 
-// Make the game server an actor so it can recieve and send messages to sessions
+// Make the game server an actor so it can receive and send messages to sessions
 impl Actor for GameServer {
   type Context = Context<Self>;
 }
@@ -127,7 +127,6 @@ impl Handler<Disconnect> for GameServer {
   }
 }
 
-// #[async_trait]
 impl Handler<ClientActorMessage> for GameServer {
   type Result = ();
 
@@ -159,35 +158,5 @@ impl Handler<ClientActorMessage> for GameServer {
         ClientMessage::StartGame => start_game(state, msg).await,
       };
     });
-
-    //   let sessions = self.sessions.clone();
-    //   let db = self.db.clone();
-    //   tokio::spawn(async move {
-    //     let mut cursor = db.lock().unwrap().collection("games").find(None, None).await.unwrap();
-    //     let mut games: Vec<Game> = Vec::new();
-    //     while let Some(game) = cursor.try_next().await.unwrap() {
-    //       games.push(game);
-    //     }
-    //     let json_string = serde_json::to_string(&games).unwrap();
-    //     send_message(&json_string, sessions, &msg.id);
-    //   });
-
-    //   let fut = actix::fut::wrap_future::<_, Self>(future);
-    //   ctx.spawn(fut);
-    // }
-
-    // fn handle(&mut self, msg: ClientActorMessage, ctx: &mut Context<Self>) {
-    //   let sessions = self.sessions.clone();
-    //   let db = self.db.clone();
-
-    //   actix_web::rt::spawn(async move {
-    //     let player_id = msg.id;
-    //     let id = database::create_game(db, player_id).await.unwrap();
-    //     let json_string = serde_json::to_string(&id).unwrap();
-    //     send_message(&json_string, sessions, &msg.id);
-    //   });
-
-    //   let fut = actix::fut::wrap_future::<_, Self>(future);
-    //   ctx.spawn(fut);
   }
 }
