@@ -51,8 +51,8 @@ impl Game {
     }
   }
 
-  // there should be at most one winner at a time, therefore we take the first
-  //   player that meets the winning condition
+  /// there should be at most one winner at a time, therefore we take the first
+  /// player that meets the winning condition
   pub fn check_winner(&self) -> Option<Color> {
     for player in &self.players {
       if player.check_winner() {
@@ -88,9 +88,9 @@ impl Game {
     self.round_phase = RoundPhase::Rolling;
   }
 
-  // how many steps we need to make to reach the first field of player's home
-  // e.g. curr_pos = 0, end_pos = 39 => distance = 40 (need to throw 40 to get to home)
-  // max(end_pos + field_size) = 39, max(curr_pos) = 39
+  /// returns how many steps we need to make to reach the first field of player's home
+  /// e.g. curr_pos = 0, end_pos = 39 => distance = 40 (need to throw 40 to get to home)
+  /// max(end_pos + field_size) = 39, max(curr_pos) = 39
   pub fn distance_from_home(&self, current_position: usize) -> usize {
     // position of the field right in front of home
     let end_position = self.get_end_position();
@@ -98,10 +98,9 @@ impl Game {
     (end_position + self.field_size() - current_position) % self.field_size() + 1
   }
 
-  // how far away is the starting position (where we place pieces after throwing 6)
-  //   from the ending position (= the last field before home)
+  /// how far away is the starting position (where we place pieces after throwing 6)
+  /// from the ending position (= the last field before home)
   fn start_end_position_difference(&self) -> usize {
-    // 1
     2
   }
 
@@ -112,7 +111,7 @@ impl Game {
       % self.fields.len()
   }
 
-  // returns size of the home column (finish)
+  /// returns size of the home column (finish)
   pub fn get_home_size(&self) -> usize {
     match self.players.get(0) {
       Some(player) => player.home.len(),
@@ -158,13 +157,7 @@ impl Game {
     }
   }
 
-  // bounds are solved by using Fields struct
-  // pub fn is_in_bounds(&self, position: usize) -> bool {
-  //   position < self.fields.len()
-  // }
-
-  // there is a clock-wise ordering: Yellow, Blue, Red, Green
-  // TODO: move to a utility, pass attr 'color' to replace 'self.current_player'
+  /// there is a clock-wise ordering: Yellow, Blue, Red, Green
   pub fn get_offset(&self) -> usize {
     let offset = (self.fields.len() / 4) as usize;
     match self.current_player {
@@ -175,12 +168,12 @@ impl Game {
     }
   }
 
-  // position of the field where we put pieces after throwing 6
+  /// position of the field where we put pieces after throwing 6
   pub fn get_starting_position(&self) -> usize {
     self.get_offset() + 8
   }
 
-  // if we land on opponent at 'position', we remove his piece (we can't jump on our own piece)
+  /// if we land on opponent at 'position', we remove his piece (we can't jump on our own piece)
   pub fn clear_field(&mut self, position: usize) {
     let position = position % 52;
     if let Some(color) = self.fields.get(position) {
@@ -193,7 +186,6 @@ impl Game {
     player.increase_pieces_at_start();
   }
 
-  // add check for player.pawns_at_start > 0 ?
   /// check if position where promoted piece would land is not occupied by our piece
   pub fn can_promote_piece(&self, dice_value: usize) -> bool {
     println!("promote roll: {}", dice_value);
@@ -202,21 +194,12 @@ impl Game {
       && self.get_current_player().pawns_at_start > 0
   }
 
-  // we can jump to a field, if it's either empty or occupied by opponent,
-  // i.e. it's not occupied by us
+  /// we can jump to a field, if it's either empty or occupied by opponent,
+  /// i.e. it's not occupied by us
   pub fn is_available_field(&self, position: usize) -> bool {
-    println!("pre mod: {},", position);
     let position = position % 52;
-    println!("post mod: {},", position);
-    // self.is_in_bounds(position) &&
     !self.is_current_players_piece(position)
   }
-
-  // pub fn opponent_at_field(&self, position: usize) -> bool {
-  //   // self.is_in_bounds(position) &&
-  //     !self.is_current_players_piece(position)
-  //     && self.is_opponents_piece(position)
-  // }
 
   pub fn get_new_position(&self, position: usize, dice_value: usize) -> usize {
     (position + dice_value) % self.fields.len()
@@ -230,8 +213,6 @@ impl Game {
 
   pub fn will_remove_enemy(&self, position: usize, dice_value: usize) -> bool {
     dice_value < self.distance_from_home(position) && self.is_opponents_piece(position + dice_value)
-    // get_new_position(position, dice_value) can be replaced with position+dice_value,
-    //  since
   }
 
   pub fn is_in_bounds_home(&self, home_offset: usize) -> bool {
@@ -244,17 +225,6 @@ impl Game {
 
   /// check if piece can reach `safe zone`
   pub fn can_jump_to_home(&self, position: usize, dice_value: usize) -> bool {
-    // let distance_from_home = self.distance_from_home(position);
-    // let will_reach_home = dice_value >= distance_from_home;
-    // let will_not_overjump_home = dice_value < distance_from_home + self.get_home_size();
-    // match will_reach_home && will_not_overjump_home {
-    //     true => {
-    //         let home_offset = dice_value - distance_from_home;
-    //         self.is_available_home_field(home_offset)
-    //     },
-    //     false => false
-    // }
-
     match self.can_reach_home(position, dice_value)
       && !self.would_overjump_home(position, dice_value)
     {
@@ -269,12 +239,9 @@ impl Game {
     self.fields.set(new_position, Some(self.current_player))
   }
 
-  // we assume we jump from 'main fields' to player's home
-  // this currently doesn't allow moving pieces within home itself - we would just have to
-  //    distinguish between old_position in self.fields and in home, so that we can clear
-  //    the correct field
+  /// we assume we jump from 'main fields' to player's home
+  /// this doesn't allow moving pieces within home itself
   pub fn jump_home(&mut self, old_position: usize, home_offset: usize) {
-    // TODO: add Home struct with safe get() / set() etc.
     if !self.is_in_bounds_home(home_offset) {
       return;
     }
@@ -290,20 +257,20 @@ impl Game {
   }
 
   // if we move 'dice_value' fields, we will reach beyond the main board/field
-  // assumes position indexes game.fields()
+  /// assumes position indexes game.fields()
   pub fn can_jump_to_finish(&self, position: usize, dice_value: usize) -> bool {
     dice_value == self.distance_from_home(position) + self.get_home_size()
   }
 
-  // distance_from_home gets you already to the first home field, that's why '>=' and not only '>'
   pub fn would_overjump_home(&self, position: usize, dice_value: usize) -> bool {
+    // distance_from_home gets you already to the first home field, that's why '>=' and not only '>'
     dice_value >= self.distance_from_home(position) + self.get_home_size()
   }
 
-  // returns position/index of field in player's home column where we will jump,
-  // i.e. offset in player's home column
-  // e.g. if piece is right in front of home => distance = 1, and if we throw a 1,
-  //      we would reach the first home field (home_offset = 0)
+  /// returns position/index of field in player's home column where we will jump,
+  /// i.e. offset in player's home column
+  /// e.g. if piece is right in front of home => distance = 1, and if we throw a 1,
+  ///      we would reach the first home field (home_offset = 0)
   pub fn get_home_offset(&self, position: usize, dice_value: usize) -> usize {
     dice_value - self.distance_from_home(position)
   }
@@ -322,7 +289,7 @@ impl Game {
     self.get_home_field(home_offset).is_some()
   }
 
-  // jump from home column (1 of 5 home fields) to finish
+  /// jump from home column (1 of 5 home fields) to finish
   pub fn jump_from_home_to_finish(&mut self, home_offset: usize) {
     if !self.is_in_bounds_home(home_offset) {
       return;
@@ -332,14 +299,14 @@ impl Game {
     player.pawns_at_finish += 1;
   }
 
-  // jump from main field to finish
+  /// jump from main field to finish
   pub fn jump_to_finish(&mut self, position: usize) {
     self.fields.set(position, None);
     let mut player = self.get_current_player_mut();
     player.pawns_at_finish += 1;
   }
 
-  // can jump from home (at home_offset) to finish OR move forward in home
+  /// can jump from home (at home_offset) to finish OR move forward in home
   pub fn can_jump_from_home(&self, home_offset: usize, dice_value: usize) -> bool {
     let home = self.get_home();
     self.can_jump_from_home_to_finish(home_offset, dice_value)
@@ -356,13 +323,13 @@ impl Game {
     home[new_home_offset] = Some(color)
   }
 
-  // can jump from home (at home_offset) to finish
+  /// can jump from home (at home_offset) to finish
   pub fn can_jump_from_home_to_finish(&self, home_offset: usize, dice_value: usize) -> bool {
     let home = self.get_home();
     home_offset + dice_value == home.len()
   }
 
-  // when we are trying to move piece in home column (1 out of 5 home fields)
+  /// when we are trying to move piece in home column (1 out of 5 home fields)
   fn execute_move_from_home(&mut self, home_offset: usize, dice_value: usize) -> MoveResult {
     let distance_from_home = self.get_home_size() - home_offset;
     match dice_value == distance_from_home {
@@ -386,14 +353,12 @@ impl Game {
     }
   }
 
-  // as of now, we assume we can only move pieces from 'main fields', not home
   pub fn execute_move(
     &mut self,
     position: usize,
     dice_value: usize,
     home_column: bool,
   ) -> MoveResult {
-    // we are trying to moving piece from
     if home_column {
       return self.execute_move_from_home(position, dice_value);
     }
@@ -432,12 +397,12 @@ impl Game {
       }
     }
   }
+
   pub fn promote_piece(&mut self, dice_value: usize) -> MoveResult {
     match self.can_promote_piece(dice_value) {
       false => MoveResult::Error(String::from("You can't promote a piece.")),
       true => {
         let mut position = self.get_starting_position();
-        // self.clear_field(position);  // would remove enemy at starting position
         position += dice_value - 6;
         self.clear_field(position);
         let player = self.get_player_mut(self.current_player);
@@ -449,7 +414,7 @@ impl Game {
     }
   }
 
-  // returns whether a field specified by <position> is is occupied by a piece with <color>
+  /// returns whether a field specified by <position> is is occupied by a piece with <color>
   pub fn is_players_piece(&self, position: usize, player_color: Color) -> bool {
     match self.fields.get(position) {
       Some(color) => color == player_color,
@@ -468,17 +433,12 @@ impl Game {
     self.is_players_piece(position, self.current_player)
   }
 
-  // // returns whether a field is empty
-  // pub fn is_field_empty(&self, position: usize) -> bool {
-  //   self.fields.get(position).is_none()
-  // }
-
   pub fn get_player(&self, player_color: Color) -> &Player {
     self
       .players
       .iter()
       .find(|&player| player.color == player_color)
-      .unwrap() // TODO: remove unwrap
+      .unwrap()
   }
 
   pub fn get_player_mut(&mut self, player_color: Color) -> &mut Player {
@@ -486,7 +446,7 @@ impl Game {
       .players
       .iter_mut()
       .find(|player| player.color == player_color)
-      .unwrap() // TODO: remove unwrap
+      .unwrap()
   }
 
   pub fn get_current_player(&self) -> &Player {
@@ -704,11 +664,6 @@ mod tests {
     assert_eq!(empty_fields_count(&game.fields.get_clone()), field_size - 1);
   }
 
-  // #[test]
-  // fn blocked_move() {
-  //
-  // }
-
   #[test]
   fn remove_opponent() {
     let mut game = get_empty_game();
@@ -782,7 +737,6 @@ mod tests {
     print_game(&game);
 
     assert_eq!(game.get_player(Color::Green).pawns_at_start, 2);
-    // assert_eq!(game.get_player(Color::Yellow).pawns_at_start, 4);
     assert!(is_empty_field(&game.fields.get_clone(), starting_pos));
     assert!(is_occupied_field_by(
       &game.fields.get_clone(),

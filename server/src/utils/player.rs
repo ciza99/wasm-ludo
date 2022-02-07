@@ -44,15 +44,6 @@ pub fn get_available_positions(game: &Game, dice_value: usize) -> (Vec<usize>, V
     .into_iter()
     .filter(|&position| game.can_jump_from_home(position, dice_value))
     .collect();
-  // player
-  // .home
-  // .clone()
-  // .into_iter()
-  // .enumerate()
-  // .filter(|(_position, field)| field.is_some())
-  // .map(|(position, _field)| position)
-  // .filter(|&position| game.can_jump_from_home(position, dice_value))
-  // .collect();
 
   (positions_on_board, piece_positions_in_home_row, can_promote)
 }

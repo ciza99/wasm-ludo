@@ -56,39 +56,6 @@ pub async fn find_game(db: &Arc<Mutex<Database>>, game_id: &str) -> anyhow::Resu
   }
 }
 
-// pub async fn update_board(
-//   db: &Arc<Mutex<Database>>,
-//   game_id: &str,
-//   fields: Vec<Field>,
-// ) -> anyhow::Result<Game> {
-//   let serialized_fields = bson::to_bson(&fields)?;
-//   let oid = match ObjectId::parse_str(game_id) {
-//     Ok(res) => res,
-//     Err(err) => return Err(anyhow!(err)),
-//   };
-//   let filter = doc! { "_id" : oid };
-//   let update = doc! { "fields": serialized_fields };
-
-//   return update_game(db, filter, update).await;
-// }
-
-// pub async fn update_player(
-//   db: &Arc<Mutex<Database>>,
-//   game_id: &str,
-//   player: Player,
-// ) -> anyhow::Result<Game> {
-//   let oid = match ObjectId::parse_str(game_id) {
-//     Ok(res) => res,
-//     Err(err) => return Err(anyhow!(err)),
-//   };
-//   let serialized_player = bson::to_bson(&player)?;
-//   let serialized_color = bson::to_bson(&player.color)?;
-
-//   let filter = doc! { "_id" : oid, "players.color": serialized_color };
-//   let update = doc! { "$set": { "players.$" : serialized_player } };
-//   return update_game(db, filter, update).await;
-// }
-
 pub async fn start_game(db: &Arc<Mutex<Database>>, game_id: &str) -> anyhow::Result<Game> {
   let oid = match ObjectId::parse_str(game_id) {
     Ok(res) => res,
@@ -98,16 +65,6 @@ pub async fn start_game(db: &Arc<Mutex<Database>>, game_id: &str) -> anyhow::Res
   let update = doc! { "$set": { "started" : true } };
   return update_game(db, filter, update).await;
 }
-
-// pub async fn finish_game(db: &Arc<Mutex<Database>>, game_id: &str) -> anyhow::Result<Game> {
-//   let oid = match ObjectId::parse_str(game_id) {
-//     Ok(res) => res,
-//     Err(err) => return Err(anyhow!(err)),
-//   };
-//   let filter = doc! { "_id" : oid };
-//   let update = doc! { "$set": { "finished_at" : mongodb::bson::DateTime::now() } };
-//   return update_game(db, filter, update).await;
-// }
 
 pub async fn add_dice_roll(
   db: &Arc<Mutex<Database>>,
@@ -123,21 +80,6 @@ pub async fn add_dice_roll(
   let update = doc! { "$push": { "dice_throws": serialized_roll } };
   return update_game(db, filter, update).await;
 }
-
-// pub async fn update_current_player(
-//   db: &Arc<Mutex<Database>>,
-//   game_id: &str,
-//   current_player: Color,
-// ) -> anyhow::Result<Game> {
-//   let oid = match ObjectId::parse_str(game_id) {
-//     Ok(res) => res,
-//     Err(err) => return Err(anyhow!(err)),
-//   };
-//   let current_player_bson = bson::to_bson(&current_player)?;
-//   let filter = doc! { "_id" : oid };
-//   let update = doc! { "$set": { "current_player": current_player_bson } };
-//   return update_game(db, filter, update).await;
-// }
 
 async fn update_game(
   db: &Arc<Mutex<Database>>,
@@ -197,12 +139,3 @@ fn make_doc(game: &Game) -> anyhow::Result<Document> {
   let doc = doc! { "$set": { "fields": fields, "players": players, "current_player": current_player, "dice_throws": &bson_dice_throws, "round_phase":phase } };
   Ok(doc)
 }
-// pub fn make_bson<T>(values: &[&T]) -> anyhow::Result<Box<[Bson]>>
-//   where T: ?Sized + Serialize {
-//     match values.into_iter().map(|value| {
-//       bson::to_bson(value)
-//     }).collect::<Result<Box<[_]>, _>>() {
-//       Ok(values) => Ok(values),
-//       Err(err) => Err(anyhow!(err)),
-//     }
-//   }

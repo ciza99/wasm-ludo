@@ -17,7 +17,6 @@ pub struct Player {
   pub is_bot: bool,
 }
 
-// TODO change id to name when db is fixed
 impl Player {
   pub fn new(id: String, name: String, color: Color, is_bot: bool) -> Self {
     Player {
@@ -31,12 +30,9 @@ impl Player {
     }
   }
 
-  // returns whether all player's pieces are in home (occupy fields of home)
-  // we assume there are 4 pieces for each player
+  /// returns whether all player's pieces are in home (occupy fields of home)
+  /// we assume there are 4 pieces for each player
   pub fn check_winner(&self) -> bool {
-    // let occupied_fields: Vec<Field> = self.home.iter().filter(|&field| field.is_some()).collect();
-    // occupied_fields.len() >= self.pieces_count()
-
     self.pawns_at_finish == PIECES_COUNT
   }
 

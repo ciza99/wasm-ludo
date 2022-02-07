@@ -8,11 +8,8 @@ use std::time::Instant;
 use crate::components::game_server::actor::GameServer;
 use crate::models::actor_messages::{ClientActorMessage, Connect, Disconnect, WsMessage};
 
-// const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(10);
-// const TIMEOUT: Duration = Duration::from_secs(15);
-
-// Game session actor (for each connected client)
-// Sends messages to the GameServer actor who coordinates all connected sessions
+/// Game session actor (for each connected client)
+/// Sends messages to the GameServer actor who coordinates all connected sessions
 pub struct GameSession {
   id: String,
   room: String,
@@ -30,24 +27,6 @@ impl GameSession {
       game_server,
     }
   }
-
-  // start the heartbeat (ping the client and expect a pong message sent back)
-  // if we get a pong message back, reset the last heartbeat -> can be seen later in this file
-  // if the duration since the last pong message is greater than the timeout, we disconnect the session due to inactivity
-  // fn heartbeat(&self, ctx: &mut ws::WebsocketContext<Self>) {
-  //   ctx.run_interval(HEARTBEAT_INTERVAL, |actor, ctx| {
-  //     if Instant::now().duration_since(actor.heartbeat) > TIMEOUT {
-  //       println!("Disconnecting due to timeout");
-  //       actor.game_server.do_send(Disconnect {
-  //         player_id: actor.id.clone(),
-  //         room_id: actor.room.clone(),
-  //       });
-  //       ctx.stop();
-  //       return;
-  //     };
-  //     ctx.ping(b"PING");
-  //   });
-  // }
 }
 
 // implementing lifecycle methods for a session
@@ -55,8 +34,6 @@ impl Actor for GameSession {
   type Context = ws::WebsocketContext<Self>;
 
   fn started(&mut self, ctx: &mut Self::Context) {
-    // self.heartbeat(ctx);
-
     println!("session started");
 
     let address = ctx.address();
