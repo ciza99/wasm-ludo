@@ -1,5 +1,6 @@
 use yew::prelude::*;
 
+#[allow(dead_code)]
 #[derive(PartialEq, Clone, Debug)]
 pub enum SnackbarVariant {
   Success,
