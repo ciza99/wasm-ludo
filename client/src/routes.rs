@@ -1,6 +1,7 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
 
+use crate::context::dialog::provider::DialogProvider;
 use crate::context::game_context::provider::GameProvider;
 use crate::context::snackbar::provider::SnackbarProvider;
 use crate::pages::game::Game;
@@ -53,10 +54,12 @@ fn switch_main(routes: &MainRoute) -> Html {
 #[function_component(Routes)]
 pub fn routes() -> Html {
   html! {
-    <SnackbarProvider>
-      <BrowserRouter>
-        <Switch<MainRoute> render={Switch::render(switch_main)} />
-      </BrowserRouter>
-    </SnackbarProvider>
+    <BrowserRouter>
+      <SnackbarProvider>
+        <DialogProvider>
+          <Switch<MainRoute> render={Switch::render(switch_main)} />
+        </DialogProvider>
+      </SnackbarProvider>
+    </BrowserRouter>
   }
 }

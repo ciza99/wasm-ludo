@@ -4,6 +4,7 @@ pub mod button;
 pub mod card;
 pub mod content;
 pub mod copy_bar;
+pub mod dialogs;
 pub mod die;
 pub mod field;
 pub mod fields;
