@@ -9,7 +9,7 @@ use yew::prelude::*;
 
 use super::context::{GameContext, MsgSender};
 use super::game_reducer::GameState;
-use crate::context::snackbar::context::{SnackbarContext, SnackbarOptions, SnackbarVariant};
+use crate::context::toasts::context::{ToastOptions, ToastVariant, ToastsContext};
 use crate::models::messages::{ClientMessage, ServerMessage};
 use crate::utils::get_host::WS_STRING;
 
@@ -19,7 +19,7 @@ pub struct UseGameProps {
 }
 
 pub fn use_game(props: &UseGameProps) -> GameContext {
-  let SnackbarContext { open } = use_context::<SnackbarContext>().expect("context not found");
+  let ToastsContext { open } = use_context::<ToastsContext>().expect("context not found");
   let game_state = use_reducer(GameState::default);
   let sender = use_state(|| None);
   let game_id = props.game_id.clone();
@@ -28,12 +28,33 @@ pub fn use_game(props: &UseGameProps) -> GameContext {
   let handle_message = {
     let game_state = game_state.clone();
     Callback::from(move |message: ServerMessage| {
-      if let ServerMessage::Error(message) = message.clone() {
-        open.emit(SnackbarOptions {
-          message,
-          variant: SnackbarVariant::Error,
-        });
-      }
+      match message.clone() {
+        ServerMessage::DiceValue(value, _) => {
+          open.emit(ToastOptions {
+            message: format!("Player rolled {}", value),
+            variant: ToastVariant::Warning,
+          });
+        }
+        ServerMessage::PlayerCountChange(count) => {
+          open.emit(ToastOptions {
+            message: format!("Players connected {}", count),
+            variant: ToastVariant::Warning,
+          });
+        }
+        ServerMessage::GameStarted(_) => {
+          open.emit(ToastOptions {
+            message: "Game started, good luck!".into(),
+            variant: ToastVariant::Success,
+          });
+        }
+        ServerMessage::Error(message) => {
+          open.emit(ToastOptions {
+            message,
+            variant: ToastVariant::Error,
+          });
+        }
+        _ => {}
+      };
       game_state.dispatch(message);
     })
   };
@@ -46,11 +67,6 @@ pub fn use_game(props: &UseGameProps) -> GameContext {
         let callback = (**callback).clone();
         let handle_message = handle_message.clone();
         let player_id: String = SessionStorage::get("player_id").unwrap();
-        log!(format!(
-          "{}/games/websocket/{}/{}",
-          WS_STRING, game_id, player_id
-        ));
-
         let ws = WebSocket::open(
           format!(
             "{}/games/websocket/{}/{}",
@@ -77,7 +93,6 @@ pub fn use_game(props: &UseGameProps) -> GameContext {
               log!("Parsing of message failed:\n", text);
             }
           }
-          log!("WEBSOCKET CLOSED")
         });
 
         spawn_local(async move {

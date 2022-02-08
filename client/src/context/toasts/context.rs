@@ -2,19 +2,19 @@ use yew::prelude::*;
 
 #[allow(dead_code)]
 #[derive(PartialEq, Clone, Debug)]
-pub enum SnackbarVariant {
+pub enum ToastVariant {
   Success,
   Warning,
   Error,
 }
 
 #[derive(PartialEq, Clone, Debug)]
-pub struct SnackbarOptions {
+pub struct ToastOptions {
   pub message: String,
-  pub variant: SnackbarVariant,
+  pub variant: ToastVariant,
 }
 
 #[derive(PartialEq, Clone, Debug)]
-pub struct SnackbarContext {
-  pub open: Callback<SnackbarOptions>,
+pub struct ToastsContext {
+  pub open: Callback<ToastOptions>,
 }

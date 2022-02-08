@@ -8,14 +8,14 @@ use crate::components::card::Card;
 use crate::components::content::Content;
 use crate::components::icon::Icon;
 
-use crate::context::snackbar::context::{SnackbarContext, SnackbarOptions, SnackbarVariant};
+use crate::context::toasts::context::{ToastOptions, ToastVariant, ToastsContext};
 use crate::routes::MainRoute;
 use crate::utils::get_host::HTTP_STRING;
 
 #[function_component(Home)]
 pub fn home() -> Html {
   let history = use_history().unwrap();
-  let SnackbarContext { open } = use_context::<SnackbarContext>().expect("context not found");
+  let ToastsContext { open } = use_context::<ToastsContext>().expect("context not found");
 
   let onclick = Callback::from(move |_| {
     let history = history.clone();
@@ -26,9 +26,9 @@ pub fn home() -> Html {
       let resp = match res {
         Ok(resp) => resp,
         Err(_) => {
-          open.emit(SnackbarOptions {
+          open.emit(ToastOptions {
             message: "Request to server failed".into(),
-            variant: SnackbarVariant::Error,
+            variant: ToastVariant::Error,
           });
           return;
         }
@@ -37,14 +37,18 @@ pub fn home() -> Html {
       let id = match resp.text().await {
         Ok(id) => id,
         Err(_) => {
-          open.emit(SnackbarOptions {
+          open.emit(ToastOptions {
             message: "Server failed creating new game".into(),
-            variant: SnackbarVariant::Error,
+            variant: ToastVariant::Error,
           });
           return;
         }
       };
 
+      open.emit(ToastOptions {
+        message: "Game successfully created!".into(),
+        variant: ToastVariant::Success,
+      });
       history.push(MainRoute::GameJoin { id })
     });
   });

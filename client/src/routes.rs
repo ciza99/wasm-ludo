@@ -3,7 +3,7 @@ use yew_router::prelude::*;
 
 use crate::context::dialog::provider::DialogProvider;
 use crate::context::game_context::provider::GameProvider;
-use crate::context::snackbar::provider::SnackbarProvider;
+use crate::context::toasts::provider::SnackbarProvider;
 use crate::pages::game::Game;
 use crate::pages::game_join::GameJoin;
 use crate::pages::game_lobby::GameLobby;

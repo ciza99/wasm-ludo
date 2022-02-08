@@ -17,9 +17,9 @@ pub fn text_input(props: &TextInputProps) -> Html {
   } = props.clone();
 
   html! {
-    <div>
+    <div class="w-full">
       <p class="font-semibold text-neutral-600">{label}</p>
-      <input class="border border-neutral-300 p-3 focus:border-primary-600 rounded shadow focus:outline-none" oninput={ &onchange } {value} />
+      <input class="w-full border border-neutral-300 p-3 focus:border-primary-600 rounded shadow focus:outline-none" oninput={ &onchange } {value} />
     </div>
   }
 }

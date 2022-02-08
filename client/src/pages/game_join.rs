@@ -12,7 +12,7 @@ use crate::components::button::Button;
 use crate::components::card::Card;
 use crate::components::content::Content;
 use crate::components::text_input::TextInput;
-use crate::context::snackbar::context::{SnackbarContext, SnackbarOptions, SnackbarVariant};
+use crate::context::toasts::context::{ToastOptions, ToastVariant, ToastsContext};
 use crate::routes::GameRoute;
 use crate::utils::get_host::HTTP_STRING;
 
@@ -29,7 +29,7 @@ pub struct JoinGameBody {
 #[function_component(GameJoin)]
 pub fn game_join(props: &GameJoinProps) -> Html {
   let GameJoinProps { id } = props.clone();
-  let SnackbarContext { open } = use_context().expect("context not found");
+  let ToastsContext { open } = use_context().expect("context not found");
   let history = use_history().unwrap();
   let nickname = use_state::<String, _>(|| "".into());
 
@@ -70,18 +70,18 @@ pub fn game_join(props: &GameJoinProps) -> Html {
         let resp = match res {
           Ok(resp) => resp,
           Err(e) => {
-            open.emit(SnackbarOptions {
+            open.emit(ToastOptions {
               message: e.to_string(),
-              variant: SnackbarVariant::Error,
+              variant: ToastVariant::Error,
             });
             return;
           }
         };
 
         if !resp.ok() {
-          open.emit(SnackbarOptions {
+          open.emit(ToastOptions {
             message: "Couldn't join game".into(),
-            variant: SnackbarVariant::Error,
+            variant: ToastVariant::Error,
           });
           return;
         };
@@ -89,18 +89,18 @@ pub fn game_join(props: &GameJoinProps) -> Html {
         let player_id = match resp.text().await {
           Ok(player_id) => player_id,
           Err(e) => {
-            open.emit(SnackbarOptions {
+            open.emit(ToastOptions {
               message: e.to_string(),
-              variant: SnackbarVariant::Error,
+              variant: ToastVariant::Error,
             });
             return;
           }
         };
 
         if SessionStorage::set("player_id", player_id).is_err() {
-          open.emit(SnackbarOptions {
+          open.emit(ToastOptions {
             message: "Failed to set your player id".into(),
-            variant: SnackbarVariant::Error,
+            variant: ToastVariant::Error,
           });
           return;
         };
@@ -120,7 +120,7 @@ pub fn game_join(props: &GameJoinProps) -> Html {
         <img class="h-28" src="/wasm-ludo/assets/ludo.svg" alt="" />
       </div>
       <Card class="w-full px-8 py-14 lg:px-40">
-        <p class="text-3xl mb-8">{"Enter your nickname bellow"}</p>
+        <p class="text-2xl mb-8 text-neutral-600 font-semibold">{"Enter your nickname bellow"}</p>
         <TextInput value={(*nickname).clone()} label={"Nickname:".to_string()} {onchange} />
         <Button class="w-full mt-8" {onclick} disabled={(*nickname).is_empty()}>{"Join the game!"}</Button>
       </Card>
