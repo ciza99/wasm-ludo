@@ -38,7 +38,7 @@ pub fn use_dialog() -> UseDialogValues {
   UseDialogValues {
     content: (*content).clone(),
     is_open: *is_open,
-    close: close.clone(),
-    open: open.clone(),
+    close,
+    open,
   }
 }

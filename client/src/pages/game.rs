@@ -1,6 +1,5 @@
 use std::rc::Rc;
 
-use gloo::console::log;
 use yew::prelude::*;
 
 use crate::components::board::Board;
@@ -19,7 +18,7 @@ pub fn game() -> Html {
     .winner
     .as_ref()
     .and_then(|color| game.players.iter().find(|player| player.color == *color))
-    .and_then(|player| Some(player.name.clone()));
+    .map(|player| player.name.clone());
 
   use_effect_with_deps(
     move |winner_name| {

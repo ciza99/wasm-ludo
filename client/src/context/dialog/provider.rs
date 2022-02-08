@@ -1,4 +1,3 @@
-use gloo::utils::document;
 use stylist::css;
 use yew::prelude::*;
 
@@ -21,7 +20,7 @@ pub fn dialog_provider(props: &DialogProviderProps) -> Html {
     is_open,
   } = use_dialog();
 
-  let context = DialogContext { open: open.clone() };
+  let context = DialogContext { open };
   let content_html = content(close);
 
   let backdrop_class = css!("background-color: rgba(0, 0, 0, .5);");
