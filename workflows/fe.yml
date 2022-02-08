@@ -1,0 +1,27 @@
+name: Frontend deploy
+
+on:
+ workflow_dispatch
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: Swatinem/rust-cache@v1
+    - name: install target
+      run: rustup target add wasm32-unknown-unknown
+    - name: install trunk
+      run: cargo install trunk --verbose
+    - name: package
+      run: cd client && trunk build --release
+    - name: Deploy
+      uses: JamesIves/github-pages-deploy-action@v4.2.3
+      with:
+          branch: gh-pages
+          folder: client/dist

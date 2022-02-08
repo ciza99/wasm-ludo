@@ -14,6 +14,7 @@ use crate::components::content::Content;
 use crate::components::text_input::TextInput;
 use crate::context::toasts::context::{ToastOptions, ToastVariant, ToastsContext};
 use crate::routes::GameRoute;
+use crate::utils::get_host::HTTP_STRING;
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct GameJoinProps {
@@ -60,7 +61,7 @@ pub fn game_join(props: &GameJoinProps) -> Html {
           name: (*nickname).clone(),
         };
         let body_json = serde_json::to_string(&body).unwrap();
-        let res = Request::put(format!("http://127.0.0.1:8080/games/{}", id).as_str())
+        let res = Request::put(format!("{}/games/{}",HTTP_STRING, id).as_str())
           .header("Content-Type", "application/json")
           .body(body_json)
           .send()
@@ -116,7 +117,7 @@ pub fn game_join(props: &GameJoinProps) -> Html {
           <p class="text-5xl font-bold">{"Ludo"}</p>
           <p class="text-2xl text-neutral-600 font-bold">{"Board game for up to 4 players online"}</p>
         </div>
-        <img class="h-28" src="/assets/ludo.svg" alt="" />
+        <img class="h-28" src="/wasm-ludo/assets/ludo.svg" alt="" />
       </div>
       <Card class="w-full px-8 py-14 lg:px-40">
         <p class="text-2xl mb-8 text-neutral-600 font-semibold">{"Enter your nickname bellow"}</p>

@@ -11,6 +11,7 @@ use super::context::{GameContext, MsgSender};
 use super::game_reducer::GameState;
 use crate::context::toasts::context::{ToastOptions, ToastVariant, ToastsContext};
 use crate::models::messages::{ClientMessage, ServerMessage};
+use crate::utils::get_host::WS_STRING;
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct UseGameProps {
@@ -66,11 +67,10 @@ pub fn use_game(props: &UseGameProps) -> GameContext {
         let callback = (**callback).clone();
         let handle_message = handle_message.clone();
         let player_id: String = SessionStorage::get("player_id").unwrap();
-
         let ws = WebSocket::open(
           format!(
-            "ws://127.0.0.1:8080/games/websocket/{}/{}",
-            game_id, player_id
+            "{}/games/websocket/{}/{}",
+            WS_STRING, game_id, player_id
           )
           .as_str(),
         )
