@@ -120,7 +120,7 @@ pub fn game_lobby(props: &GameLobbyProps) -> Html {
         </div>
         <div class="flex items-center gap-3 mt-16">
           <Button class="w-full" onclick={on_start} icon={start_icon}>{"Start the game!"}</Button>
-          <Button class="w-full bg-red-700" onclick={redirect_to_home} icon={leave_icon}>{"Leave the lobby"}</Button>
+          <Button class="w-full" bg_color="bg-red-700" onclick={redirect_to_home} icon={leave_icon}>{"Leave the lobby"}</Button>
         </div>
       </Card>
     </Content>
