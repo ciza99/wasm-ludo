@@ -12,22 +12,22 @@ use crate::pages::not_found::NotFound;
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum MainRoute {
-  #[at("/")]
+  #[at("/wasm-ludo/")]
   Home,
-  #[at("/games/:id/join")]
+  #[at("/wasm-ludo/games/:id/join")]
   GameJoin { id: String },
-  #[at("/games/:id/:rest")]
+  #[at("/wasm-ludo/games/:id/:rest")]
   GameSubroutes { id: String },
   #[not_found]
-  #[at("/404")]
+  #[at("/wasm-ludo/404")]
   NotFound,
 }
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum GameRoute {
-  #[at("/games/:id/lobby")]
+  #[at("/wasm-ludo/games/:id/lobby")]
   GameLobby { id: String },
-  #[at("/games/:id/play")]
+  #[at("/wasm-ludo/games/:id/play")]
   Game { id: String },
 }
 
