@@ -22,7 +22,8 @@ async fn main() -> anyhow::Result<()> {
   dotenv().ok();
 
   let database_url = env::var("DATABASE_URL").expect("DATABASE_URL env variable is not set");
-
+  let port = env::var("PORT").unwrap_or("8080".to_string());
+  
   let mut client_options = ClientOptions::parse(database_url).await?;
   client_options.app_name = Some("Ludo".to_string());
 
@@ -48,7 +49,7 @@ async fn main() -> anyhow::Result<()> {
       .wrap(middleware::Logger::default())
       .configure(components::game::routes::attach_routes)
   })
-  .bind("127.0.0.1:8080")?
+  .bind(format!("0.0.0.0:{}",port))?
   .run()
   .await?;
 
