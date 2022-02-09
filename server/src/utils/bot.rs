@@ -31,7 +31,7 @@ pub fn create_bot_name() -> String {
   let mut rng = rand::thread_rng();
   format!(
     "{} {}",
-    names[rng.gen_range(0..21)],
-    surnames[rng.gen_range(0..21)]
+    names[rng.gen_range(0..names.len())],
+    surnames[rng.gen_range(0..surnames.len())]
   )
 }
