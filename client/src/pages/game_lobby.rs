@@ -14,6 +14,7 @@ use crate::components::outlined_item::OutlinedItem;
 use crate::context::game_context::context::GameContext;
 use crate::models::messages::{ClientMessage, ServerMessage};
 use crate::routes::{GameRoute, MainRoute};
+use crate::utils::get_host::JOIN_STRING;
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct GameLobbyProps {
