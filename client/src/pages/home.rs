@@ -64,7 +64,7 @@ pub fn home() -> Html {
           <p class="text-5xl font-bold">{"Ludo"}</p>
           <p class="text-2xl text-neutral-600 font-bold">{"Board game for up to 4 players online"}</p>
         </div>
-        <img class="h-28" src="/wasm-ludo/assets/ludo.svg" alt="" />
+        <img class="h-28" src="/assets/ludo.svg" alt="" />
       </div>
       <Card class="w-full px-8 py-14 lg:px-40">
         <p class="text-2xl font-bold text-neutral-800">{ "Start by creating a new game lobby" }</p>
