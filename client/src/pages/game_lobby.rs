@@ -105,7 +105,7 @@ pub fn game_lobby(props: &GameLobbyProps) -> Html {
       </div>
       <Card class="w-full px-8 py-14 lg:px-40">
         <p class="text-xl text-neutral-600 font-bold">{"Share the link with your friends and start the game"}</p>
-        <CopyBar content={ format!("localhost:3000/games/{}/join", id) } />
+        <CopyBar content={ format!("{}/games/{}/join",JOIN_STRING, id) } />
         <div class="flex items-center gap-3 text-neutral-600 mt-16">
           <Icon class="fas fa-info-circle" />
           <p class="text-xl font-bold">{"Starting the game without all 4 players will fill the remaining spots with
