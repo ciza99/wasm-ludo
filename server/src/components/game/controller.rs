@@ -113,7 +113,7 @@ pub async fn get_games(data: web::Data<AppData>) -> HttpResponse {
   let mut cursor = game_collection.find(None, None).await.unwrap();
 
   let mut games: Vec<Game> = Vec::new();
-  while let Some(game) = cursor.try_next().await.unwrap() {
+  while let Ok(Some(game)) = cursor.try_next().await {
     games.push(game);
   }
 

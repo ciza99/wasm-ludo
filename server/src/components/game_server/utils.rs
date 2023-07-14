@@ -5,7 +5,7 @@ use crate::models::actor_messages::WsMessage;
 
 pub fn send_message(message: &str, sessions: HashMap<String, Recipient<WsMessage>>, id_to: &str) {
   if let Some(session) = sessions.get(id_to) {
-    session.do_send(WsMessage(message.to_owned())).ok();
+    session.do_send(WsMessage(message.to_owned()));
   } else {
     println!("attempting to send message but couldn't find session with given id.");
   }
